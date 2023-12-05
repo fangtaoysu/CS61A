@@ -75,14 +75,17 @@ class Player:
         >>> test_deck = Deck([test_card.copy() for _ in range(6)])
         >>> test_player = Player(test_deck, 'tester')
         >>> len(test_deck.cards)
-        6
+        1
         >>> len(test_player.hand)
-        6
+        5
         """
         self.deck = deck
         self.name = name
         "*** YOUR CODE HERE ***"
-        self.hand = deck.cards
+        self.hand = []
+        card_count = 5
+        for _ in range(card_count):
+            self.hand.append(self.deck.draw())
 
     def draw(self):
         """Draw a card from the player's deck and add it to their hand.
@@ -91,7 +94,7 @@ class Player:
         >>> test_player = Player(test_deck, 'tester')
         >>> test_player.draw()
         >>> len(test_deck.cards)
-        6
+        0
         >>> len(test_player.hand)
         6
         """
@@ -163,7 +166,11 @@ class AICard(Card):
         True
         """
         "*** YOUR CODE HERE ***"
-        implemented = False
+        card_count = 2
+        for _ in range(card_count):
+            player.hand.append(player.deck.draw())
+
+        implemented = True
         # You should add your implementation above this.
         if implemented:
             print(f"{self.name} allows me to draw two cards!")
@@ -206,12 +213,16 @@ class TutorCard(Card):
         """
         "*** YOUR CODE HERE ***"
         added = False
+        if len(player.hand) > 0:
+            player.hand.append(player.hand[0].copy())
+            added = True
         # You should add your implementation above this.
         if added:
             print(f"{self.name} allows me to add a copy of a card to my hand!")
 
     "*** YOUR CODE HERE ***"
-
+    def power(self, opponent_card):
+        return -float('inf')
 
     def copy(self):
         """
@@ -246,8 +257,16 @@ class TACard(Card):
         """
         "*** YOUR CODE HERE ***"
         best_card = None
+        max_power = -float('inf')
+        for card in player.hand:
+            if card.power(opponent_card) > max_power:
+                max_power = card.power(opponent_card)
+                best_card = card            
         # You should add your implementation above this.
         if best_card:
+            self.attack += best_card.attack
+            self.defense += best_card.defense
+            player.hand.remove(best_card)
             print(f"{self.name} discards {best_card.name} from my hand to increase its own power!")
 
 
@@ -285,6 +304,11 @@ class InstructorCard(Card):
         """
         "*** YOUR CODE HERE ***"
         re_add = False
+        self.attack -= 1000
+        self.defense -= 1000
+        if self.attack >=0 or self.defense >= 0:
+            player.hand.append(self)
+            re_add = True
         # You should add your implementation above this.
         if re_add:
             print(f"{self.name} returns to my hand!")
