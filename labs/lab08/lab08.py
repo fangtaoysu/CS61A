@@ -18,7 +18,10 @@ def duplicate_link(link, val):
     Link(1, Link(2, Link(2, Link(2, Link(2, Link(3))))))
     """
     "*** YOUR CODE HERE ***"
-
+    if link.rest is not Link.empty:
+        duplicate_link(link.rest, val)
+    if link.first == val:
+        link.rest = Link(val, link.rest)
 
 def convert_link(link):
     """Takes a linked list and returns a Python list with the same elements.
@@ -30,7 +33,11 @@ def convert_link(link):
     []
     """
     "*** YOUR CODE HERE ***"
-
+    res = []
+    while link is not Link.empty:
+        res.append(link.first)
+        link = link.rest
+    return res
 
 def multiply_lnks(lst_of_lnks):
     """
@@ -48,13 +55,12 @@ def multiply_lnks(lst_of_lnks):
     Link(48, Link(12, Link(0)))
     """
     product = 1
-    for _________ in ________________:
-        if __________________________________________:
-            _________________________________
-        ___________________
-    lst_of_lnks_rests = [_________ for _________ in ________________]
-    return _________________________________________________
-
+    for lnk in lst_of_lnks:
+        if lnk is Link.empty:
+            return Link.empty
+        product *= lnk.first
+    lst_of_lnks_rests = [lnk.rest for lnk in lst_of_lnks]
+    return Link(product, multiply_lnks(lst_of_lnks_rests))
 
 class Link:
     """A linked list.
