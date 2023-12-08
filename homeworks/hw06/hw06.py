@@ -129,13 +129,12 @@ def deep_map_mut(func, lnk):
     <9 <16> 25 36>
     """
     "*** YOUR CODE HERE ***"
-    lnk.first = func(lnk.first)
-    rest = lnk.rest
-    while rest:
-        if type(rest.first) == Link:
-            print('yes')
-        rest.first = func(rest.first)
-        rest = rest.rest
+    if isinstance(lnk.first, Link):
+        deep_map_mut(func, lnk.first)
+    else:
+        lnk.first = func(lnk.first)
+    if lnk.rest:
+        deep_map_mut(func, lnk.rest)
         
 
 
@@ -158,8 +157,13 @@ def two_list(vals, counts):
     Link(1, Link(1, Link(3, Link(3, Link(2)))))
     """
     "*** YOUR CODE HERE ***"
-
-
+    num_list = []
+    n = 0
+    for i in range(len(vals)):
+        num_list += [vals[i]] * counts[i]
+    for x in num_list:
+        n = n * 10 + x
+    return store_digits(n)
 
 class Link:
     """A linked list.
@@ -201,4 +205,3 @@ class Link:
             string += str(self.first) + ' '
             self = self.rest
         return string + str(self.first) + '>'
-

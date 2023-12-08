@@ -18,6 +18,8 @@ def duplicate_link(link, val):
     Link(1, Link(2, Link(2, Link(2, Link(2, Link(3))))))
     """
     "*** YOUR CODE HERE ***"
+    # Link就是链表，此处用的是递归的思想
+    # 如果按链表方式处理，就是一个迭代的过程
     if link.rest is not Link.empty:
         duplicate_link(link.rest, val)
     if link.first == val:
