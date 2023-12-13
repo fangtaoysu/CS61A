@@ -14,20 +14,20 @@ def calc_eval(exp):
     3
     """
     if isinstance(exp, Pair):
-        operator = exp.first # UPDATE THIS FOR Q2
+        operator = bindings[exp.first] if exp.first in bindings.keys() else exp.first # UPDATE THIS FOR Q2
         operands = exp.rest # UPDATE THIS FOR Q2
         if operator == 'and': # and expressions
             return eval_and(operands)
         elif operator == 'define': # define expressions
             return eval_define(operands)
         else: # Call expressions
-            return calc_apply(OPERATORS, operands) # UPDATE THIS FOR Q2
+            return calc_apply(OPERATORS[operator], operands) # UPDATE THIS FOR Q2
     elif exp in OPERATORS:   # Looking up procedures
         return OPERATORS[exp]
     elif isinstance(exp, int) or isinstance(exp, bool):   # Numbers and booleans
         return exp
-    elif _________________: # CHANGE THIS CONDITION FOR Q4
-        return _________________ # UPDATE THIS FOR Q4
+    elif isinstance(exp, str): # CHANGE THIS CONDITION FOR Q4
+        return bindings[exp] # UPDATE THIS FOR Q4
 
 def calc_apply(op, args):
     return op(args)
@@ -35,7 +35,47 @@ def calc_apply(op, args):
 def addition(args):
     if args is nil:
         return 0
+    if isinstance(args.first, Pair):
+        return calc_eval(args.first)
+    if args.rest is nil:
+        return args.first
     return args.first + addition(args.rest)
+
+def subtraction(args):
+    if args is nil:
+        return 0
+    res = args.first
+    if isinstance(args.first, Pair):
+        res = calc_eval(args.first)
+    while args.rest is not nil:
+        item = args.rest.first
+        if isinstance(args.first, Pair):
+            item = calc_eval(args.first)
+        res -= item
+        args = args.rest
+
+def multiplication(args):
+    if args is nil:
+        return 1
+    if isinstance(args.first, Pair):
+        return calc_eval(args.first)
+    if args.rest is nil:
+        return args.first
+    return args.first * multiplication(args.rest)
+
+def division(args):
+    if args is nil:
+        return 0
+    res = args.first
+    if isinstance(args.first, Pair):
+        res = calc_eval(args.first)
+    while args.rest is not nil:
+        item = args.rest.first
+        if isinstance(args.rest.first, Pair):
+            item = calc_eval(args.rest.first)
+        res /= item
+        args = args.rest
+    return res
 
 def floor_div(args):
     """
@@ -60,10 +100,12 @@ def floor_div(args):
     if args is nil:
         return 0
     res = args.first
+    if isinstance(args.first, Pair):
+        res = calc_eval(args.first)
     while args.rest is not nil:
         item = args.rest.first
-        if isinstance(item, Pair) and item.first is "+":
-            item  = item.rest.first + item.rest.rest.first
+        if isinstance(args.rest.first, Pair):
+            item = calc_eval(args.rest.first)
         res //= item
         args = args.rest
     return res
@@ -90,6 +132,16 @@ def eval_and(expressions):
     True
     """
     # BEGIN SOLUTION Q3
+    if expressions is nil:
+        return scheme_t
+    if expressions.first is False:
+        return scheme_f
+    
+    if expressions.rest is nil:
+        if isinstance(expressions.first, Pair):
+            return calc_eval(expressions.first)
+        return expressions.first
+    return eval_and(expressions.rest)
     
 
 bindings = {}
@@ -110,6 +162,17 @@ def eval_define(expressions):
     2
     """
     # BEGIN SOLUTION Q4
+    method = expressions.rest.first
+    # if method in OPERATORS.keys():
+    #     bindings[expressions.first] = OPERATORS[method]
+    if isinstance(method, str):
+        if method in OPERATORS.keys():
+            bindings[expressions.first] = method
+        elif method in bindings.keys():
+            bindings[expressions.first] = bindings[method]
+    else:
+        bindings[expressions.first] = method
+    return expressions.first
 
 OPERATORS = { "//": floor_div, "+": addition, "-": subtraction, "*": multiplication, "/": division }
 
@@ -179,3 +242,11 @@ class nil:
         return self
 
 nil = nil() # Assignment hides the nil class; there is only one instance
+
+
+eval_define(Pair("a", Pair(1, nil)))
+eval_define(Pair("b", Pair(3, nil)))
+eval_define(Pair("c", Pair("a", nil)))
+calc_eval("c")
+calc_eval(Pair("define", Pair("d", Pair("//", nil))))
+calc_eval(Pair("d", Pair(4, Pair(2, nil))))
