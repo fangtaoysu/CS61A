@@ -217,12 +217,16 @@ def make_let_frame(bindings, env):
     names = vals = nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
-    validate_form()
-    validate_formals()
+    # 每次的expr [<name> <val>]
+    while bindings:
+        expr = bindings.first
+        validate_form(expr, 2, 2)
+        names = Pair(expr.first, names)
+        vals = Pair(eval_all(expr.rest, env), vals)
+        bindings = bindings.rest
+    validate_formals(names)
     # END PROBLEM 14
     return env.make_child_frame(names, vals)
-
-
 
 def do_quasiquote_form(expressions, env):
     """Evaluate a quasiquote form with parameters EXPRESSIONS in
