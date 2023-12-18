@@ -37,6 +37,7 @@
       #f))
 
 (define (switch-factors n)
+  ; if a number only can be divisible by two numbers, it is prime, else composite
   (switch (min (count is-factor n n) 3) 
           ((1 `one)
           (2 `prime)
