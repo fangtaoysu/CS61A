@@ -1,6 +1,6 @@
 # CS61A
 
-[mit cs61A官网](https://inst.eecs.berkeley.edu/~cs61a/sp21/)
+[UCB cs61A官网](https://inst.eecs.berkeley.edu/~cs61a/sp21/)
 
 ## 介绍
 
